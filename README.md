@@ -8,28 +8,28 @@ Example code is when running in main project folder (not submodule folder)
 
 * Adding this repository as a submodule
 
-'''
+```
 git add submodule https://github.com/nshawen/RTOUtil
-'''
+```
 
 * Pulling code when cloning a repository that uses this code
 
-'''
+```
 git submodule init
 git submodule update
-'''
+```
 
 * Pulling future updates to the submodule version used in a project
 
-'''
+```
 git submodule update
-'''
+```
 
 * Check for changes to this repository and incorporate into your project
 
-'''
+```
 git submodule update --remote
-'''
+```
 
 ## Contributing
 
