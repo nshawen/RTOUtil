@@ -28,7 +28,7 @@ def class TimeseriesData(Data):
 def class ProcessedData(Data):
     def __init__(self,sourcepath):
         Data.__init__(self,sourcepath)
-        self.processData(self)
+        self.processData()
 
     def processData(self):
         self.data = self.data
@@ -43,8 +43,16 @@ def class AccelData(TimeseriesData):
     def readData(self,path)
         pd.read_csv(path,header=0,names=['xl_x','xl_y','xl_z'])
 
-def class InclinationData(TimeseriesData,AcccelData):
-    pass
+def class InclinationData(TimeseriesData,ProcessedData):
+
+    dataType = 'Inclination'
+
+    def __init__(self,sourcepath):
+        TimeseriesData.__init__(self,sourcepath)
+        self.processData()
+
+    def processData(self):
+        self.data = pd.apply(self.data, lambda x: np.atan2(x.xl_x,x.xl_y))
 
 def class FeatureData:
     def __init__():
