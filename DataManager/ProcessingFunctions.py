@@ -4,6 +4,8 @@ from scipy.spatial.transform import Rotation
 
 g = 9.80665 # m per sec^2
 
+### Utilities functions ###
+
 # check for axis of specified length and return its position
 def matchAxis(shape,l=3):
     if l not in shape:
@@ -20,6 +22,8 @@ def getMagnitude(signal):
     ax = matchAxis(signal.shape)
 
     return signal.apply(lambda x: (x.iloc[0]**2+x.iloc[1]**2+x.iloc[2]**2)**.5,axis=ax)
+
+### User-facing processing functions for use with data classes ###
 
 def vectorsToRotation(vec1, vec2):
     ''' Find the rotation that aligns vec1 to vec2
