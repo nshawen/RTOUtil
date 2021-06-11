@@ -22,13 +22,13 @@ def getMagnitude(signal):
     return signal.apply(lambda x: (x.iloc[0]**2+x.iloc[1]**2+x.iloc[2]**2)**.5,axis=ax)
 
 def vectorsToRotation(vec1, vec2):
-    """ Find the rotation that aligns vec1 to vec2
+    ''' Find the rotation that aligns vec1 to vec2
     :param vec1: A 3d "source" vector
     :param vec2: A 3d "destination" vector
     :return Rotation: scipy Rotation object from rotation matrix
 
     https://www.theochem.ru.nl/~pwormer/Knowino/knowino.org/wiki/Rotation_matrix.html#Vector_rotation
-    """
+    '''
     a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (vec2 / np.linalg.norm(vec2)).reshape(3)
     v = np.cross(a, b)
     c = np.dot(a, b)
@@ -39,7 +39,7 @@ def vectorsToRotation(vec1, vec2):
     return Rotation.from_matrix(rotation_matrix)
 
 # calculate euler angles from accel data, when magnitude close to 1g (within tolerance bounds)
-def getInclinations(accelTri, accelMag = None, tol=.1, gAxis = 1, eAxis = 'xyz'):
+def getInclinations(accelTri, accelMag = None, tol=.1, gAxis = 0, eAxis = 'yzy'):
     '''
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html
     '''
@@ -64,3 +64,6 @@ def getInclinations(accelTri, accelMag = None, tol=.1, gAxis = 1, eAxis = 'xyz')
         I.loc[dropInds,:] = np.nan
 
     return I
+
+def getSpectrogram(signal):
+    pass
