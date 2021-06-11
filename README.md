@@ -4,7 +4,7 @@ Utilities code for RTO lab projects using jupyter notebooks.
 
 ## Using in your project:
 
-Example code is when running in main project folder (not submodule folder)
+Example command line code when running in main project folder (not submodule folder)
 
 * Adding this repository as a submodule
 
@@ -12,7 +12,7 @@ Example code is when running in main project folder (not submodule folder)
 git add submodule https://github.com/nshawen/RTOUtil
 ```
 
-* Pulling code when cloning a repository that uses this code
+* Pulling code when cloning a repository that uses this code (e.g. this package is already being used in the project, you just want to pull it in)
 
 ```
 git submodule init
