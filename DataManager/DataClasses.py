@@ -1,58 +1,71 @@
+import pandas as pd
+import numpy as np
+import ProcessingFunctions as PF
+
 # Abstract classes (meant to be inherited only)
 def class Data:
 
-    dataType = None
-    featureMethods = []
+    _name = 'DefaultData'
+    features = []
 
-    def __init__(self,path):
-        # store data filepath that user provided
-        self.dataPath = path
-        # load data from file
-        self.data = self.readData(self.dataPath)
+    def __init__(self,source,processFunc==None):
+        # store data filepath and parsing function that user provided
+        self._dataSource = source
 
-    def readData(self,path):
-        self.data = pd.read_csv(path)
+        # update processData function if given by user
+        if processFunc is not None:
+            self.processData = processFunc
 
+        # take in and process data source
+        self.parseData()
+
+        if not self.qualityCheck():
+            print("loaded data doesn't match required format")
+
+    ## support functions
     def computeFeatures(self):
         f = []
-        for fm in featureMethods:
-            f.append(fm(self.data))
-
-def class TimeseriesData(Data):
-    def __init__(self,path,freq):
-        Data.__init__(self,path)
-
-        self.freq = freq
-        self.fs = 1./freq
-
-def class ProcessedData(Data):
-    def __init__(self,sourcepath):
-        Data.__init__(self,sourcepath)
-        self.processData()
+        for fm in self.features:
+            f.append(fm(self._data))
 
     def processData(self):
-        self.data = self.data
+        self._data = pd.read_csv(self._dataSource)
+
+    def qualityCheck(self):
+        return True
+
+def class TimeseriesData(Data):
+    def __init__(self,path,parseFunc,freq):
+        Data.__init__(self,path,parseFunc)
+
+        self._freq = freq
+        self._fs = 1./freq
+
+# def class ProcessedData(Data):
+#     def __init__(self,source,parseFunc):
+#         Data.__init__(self,source,parseFunc)
+#         self.processData()
+#
+#     def processData(self):
+#         self._data = self._data
 
 # Real, child classes (meant to be actively used in code)
 
 def class AccelData(TimeseriesData):
 
-    dataType = 'Accel'
-    featureMethods = [np.mean,np.std]
+    _name = 'DefaultAccel'
+    features = []
 
-    def readData(self,path)
-        pd.read_csv(path,header=0,names=['xl_x','xl_y','xl_z'])
+    def qualityCheck(self):
 
-def class InclinationData(TimeseriesData,ProcessedData):
 
-    dataType = 'Inclination'
+def class InclinationData(TimeseriesData):
 
-    def __init__(self,sourcepath):
+    _name = 'DefaultInclin'
+
+    def __init__(self,source):
         TimeseriesData.__init__(self,sourcepath)
         self.processData()
 
     def processData(self):
-        self.data = pd.apply(self.data, lambda x: np.atan2(x.xl_x,x.xl_y))
-
-def class FeatureData:
-    def __init__():
+        self._data = pd.apply(self._data, lambda x: np.atan2(x.xl_x,x.xl_y))
