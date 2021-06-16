@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import scipy.stats as stats
 import DataClasses as DC
 
 def getDF_Line(df,axis,line):
@@ -21,7 +22,7 @@ def getDF_Line(df,axis,line):
 # abstract class (for inheritance only)
 def class Feature:
 
-    sourceTypes = None
+    _sourceTypes = None
     _name = 'DefaultFeature'
     # default feature value
     _value = np.nan
@@ -30,6 +31,8 @@ def class Feature:
     def __init__(self,dataSource):
 
         self._dataSource = dataSource
+
+        self._name = '_'.join([dataSource._name, self._name])
 
         if type(dataSource) in sourceTypes:
             self._value = self.calcFeature()
@@ -40,24 +43,68 @@ def class Feature:
 
         return np.nan
 
-# more specific feature class
-def class Mean(Feature):
+# abstract class for timeseries-based features
+def class TimeseriesFeature(Feature):
 
-    sourceTypes = [DC.TimeseriesData]
-    name = 'Mean'
+    _sourceTypes = [DC.TimeseriesData]
+    _name = 'TS_DefaultFeature'
+    _tsColumnName = 'Time'
 
     def __init__(self,dataSource,axis=0,line=0):
 
         # store axis/column info for feature calculation
         self._axis = axis
         self._line = line
-        self._name = dataSource._name+self._name+str(column)
 
         # store source info and calculate feature
         Feature.__init__(self,dataSource)
 
+        # update base name to include and field name
+        self._name = '_'.join([self._name, str(self._line)])
+
     def calcFeature(self):
 
-        vals = getDF_Line(self._dataSource,self._axis,self._line).values
+        vals = getDF_Line(self._dataSource._data,self._axis,self._line).values
+        ts = getDF_Line(self._dataSource._data,self._axis,_tsColumnName).values
+
+        return self.featureFunc(vals,ts)
+
+    # feature function taking in one row of values and corresponding timestamps
+    # outputs feature value
+    # meant to be overridden in inheriting classes
+    def featureFunc(vals,ts):
+
+        return np.nan
+
+# more specific feature classes
+def class Mean(TimeseriesFeature):
+
+    _name = 'Mean'
+
+    def featureFunc(vals,ts):
 
         return np.nanmean(vals)
+
+def class StdDev(TimeseriesFeature):
+
+    _name = 'StdDev'
+
+    def featureFunc(vals,ts):
+
+        return np.nanstd(vals)
+
+def class Skewness(TimeseriesFeature):
+
+    _name = 'Skew'
+
+    def featureFunc(vals,ts):
+
+        return stats.skewness(vals,nan_policy='omit')
+
+def class Kurtosis(TimeseriesFeature):
+
+    _name = 'Kurt'
+
+    def featureFunc(vals,ts):
+
+        return stats.kurtosis(vals,nan_policy='omit')
