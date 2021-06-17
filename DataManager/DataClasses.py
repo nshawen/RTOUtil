@@ -8,7 +8,7 @@ def class Data:
     _name = 'DefaultData'
     features = []
 
-    def __init__(self,source,processFunc==None):
+    def __init__(self,source,processFunc=None,name=):
         # store data filepath and parsing function that user provided
         self._dataSource = source
 
@@ -35,7 +35,7 @@ def class Data:
         return True
 
 def class TimeseriesData(Data):
-    def __init__(self,path,parseFunc,freq):
+    def __init__(self,path,parseFunc=None,freq=None):
         Data.__init__(self,path,parseFunc)
 
         self._freq = freq
@@ -57,14 +57,24 @@ def class AccelData(TimeseriesData):
     features = []
 
     def qualityCheck(self):
+        columnsAllowed = ['Time','X','Y','Z']
 
+        typeCheck = type(self._data)==pd.DataFrame
+        if typeCheck:
+            columnsCheck = all([c in columnsAllowed for c in self._data.columns])
+            indexCheck = all([c in columnsAllowed for c in self._data.columns])
+        else:
+            columnsCheck = False
+            indexCheck = False
+
+        return typeCheck and (columnsCheck or indexCheck)
 
 def class InclinationData(TimeseriesData):
 
     _name = 'DefaultInclin'
 
     def __init__(self,source):
-        TimeseriesData.__init__(self,sourcepath)
+        TimeseriesData.__init__(self,source)
         self.processData()
 
     def processData(self):
