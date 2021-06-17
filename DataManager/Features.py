@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import DataClasses as DC
+import Constats as C
 
 def getDF_Line(df,axis,line):
 
@@ -48,7 +49,6 @@ def class TimeseriesFeature(Feature):
 
     _sourceTypes = [DC.TimeseriesData]
     _name = 'TS_DefaultFeature'
-    _tsColumnName = 'Time'
 
     def __init__(self,dataSource,axis=0,line=0):
 
@@ -65,7 +65,7 @@ def class TimeseriesFeature(Feature):
     def calcFeature(self):
 
         vals = getDF_Line(self._dataSource._data,self._axis,self._line).values
-        ts = getDF_Line(self._dataSource._data,self._axis,_tsColumnName).values
+        ts = getDF_Line(self._dataSource._data,self._axis,C.TS_COL_NAME).values
 
         return self.featureFunc(vals,ts)
 

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import ProcessingFunctions as PF
+import Features as F
 import Constants as C
 
 # Abstract classes (meant to be inherited only)
@@ -41,7 +42,8 @@ def class TimeseriesData(Data):
         Data.__init__(self,path,parseFunc)
 
         if freq is None:
-            freq = self._data
+            ts = self._data[C.TS_COL_NAME]
+            freq = 1./np.mode(ts.diff().values)
 
         self._freq = freq
         self._fs = 1./freq
@@ -74,27 +76,36 @@ def class TriaxialTsData(TimeseriesData):
 
         return TSCheck and (columnsCheck or indexCheck)
 
-# def class ProcessedData(Data):
-#     def __init__(self,source,parseFunc):
-#         Data.__init__(self,source,parseFunc)
-#         self.processData()
-#
-#     def processData(self):
-#         self._data = self._data
+def class ProcessedData(Data):
+
+    _name = 'DefaultProcData'
+    _sourceTypes = []
+
+    def __init__(self,source,processFunc=None,name=_name):
+
+        if self.checkSource(source):
+            Data.__init__(self,source,processFunc,name=)
+        else:
+            print('Source type not allowed')
+
+    def checkSource(self,source):
+        return type(source) in self._sourceTypes
+
 
 # Real, child classes (meant to be actively used in code)
-def class AccelData(TimeseriesData):
+def class AccelData(TriaxialTsData):
 
     _name = 'DefaultAccel'
     features = []
 
-def class InclinationData(TimeseriesData):
+def class InclinationData(TimeseriesData,ProcessedData):
 
     _name = 'DefaultInclin'
 
-    def __init__(self,source):
-        TimeseriesData.__init__(self,source)
-        self.processData()
+    def __init__(self,source,processFunc=None,name=_name):
+        if self.checkSource(source):
+            TimeseriesData.__init__(self,source,processFunc,name)
+            self.processData()
 
     def processData(self):
         self._data = pd.apply(self._data, lambda x: np.atan2(x.xl_x,x.xl_y))
