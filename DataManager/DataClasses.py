@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import ProcessingFunctions as PF
+import Constants as C
 
 # Abstract classes (meant to be inherited only)
 def class Data:
@@ -8,9 +9,10 @@ def class Data:
     _name = 'DefaultData'
     features = []
 
-    def __init__(self,source,processFunc=None,name=):
-        # store data filepath and parsing function that user provided
+    def __init__(self,source,processFunc=None,name=_name):
+        # store data filepath and name
         self._dataSource = source
+        self._name = name
 
         # update processData function if given by user
         if processFunc is not None:
@@ -38,8 +40,39 @@ def class TimeseriesData(Data):
     def __init__(self,path,parseFunc=None,freq=None):
         Data.__init__(self,path,parseFunc)
 
+        if freq is None:
+            freq = self._data
+
         self._freq = freq
         self._fs = 1./freq
+
+    def qualityCheck(self):
+        typeCheck = type(self._data)==pd.DataFrame
+        if typeCheck:
+            timeCheck = C.TS_COL_NAME in self._data.columns
+        return typeCheck & timeCheck
+
+
+def class TriaxialTsData(TimeseriesData):
+
+    _name = 'DefaultTriaxial'
+    features = []
+
+    def qualityCheck(self):
+        #use base Timeseries quality check, then additional checks
+        TSCheck = TimeseriesData.qualityCheck(self)
+
+        columnsAllowed = {C.TS_COL_NAME,C.X_AXIS_COL_NAME,
+                          C.Y_AXIS_COL_NAME,C.Z_AXIS_COL_NAME}
+
+        columnsCheck = False
+        indexCheck = False
+
+        if TSCheck:
+            columnsCheck = set(self._data.columns)==columnsAllowed
+            indexCheck = set(self._data.columns)==columnsAllowed
+
+        return TSCheck and (columnsCheck or indexCheck)
 
 # def class ProcessedData(Data):
 #     def __init__(self,source,parseFunc):
@@ -50,24 +83,10 @@ def class TimeseriesData(Data):
 #         self._data = self._data
 
 # Real, child classes (meant to be actively used in code)
-
 def class AccelData(TimeseriesData):
 
     _name = 'DefaultAccel'
     features = []
-
-    def qualityCheck(self):
-        columnsAllowed = ['Time','X','Y','Z']
-
-        typeCheck = type(self._data)==pd.DataFrame
-        if typeCheck:
-            columnsCheck = all([c in columnsAllowed for c in self._data.columns])
-            indexCheck = all([c in columnsAllowed for c in self._data.columns])
-        else:
-            columnsCheck = False
-            indexCheck = False
-
-        return typeCheck and (columnsCheck or indexCheck)
 
 def class InclinationData(TimeseriesData):
 

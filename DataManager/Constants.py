@@ -1,0 +1,4 @@
+TS_COL_NAME = 'Time'
+X_AXIS_COL_NAME = 'X'
+Y_AXIS_COL_NAME = 'Y'
+Z_AXIS_COL_NAME = 'Z'
