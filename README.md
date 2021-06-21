@@ -1,6 +1,11 @@
 # RTOUtil
 
-Utilities code for RTO lab projects using jupyter notebooks.
+Project to form a python package encapsulating the core workflows used by the Research Technologies and Outcomes lab to apply data science to wearables and healthcare.
+
+Additional utilities code for RTO lab projects using jupyter notebooks.
+
+Created by Nick Shawen
+This project is licensed under the terms of the MIT license.
 
 ## Using in your project:
 
