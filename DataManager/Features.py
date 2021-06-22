@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
-import DataClasses as DC
-import Constats as C
+from .DataClasses import TimeseriesData
+from .Constants import *
 
 def getDF_Line(df,axis,line):
 
@@ -21,7 +21,7 @@ def getDF_Line(df,axis,line):
 
 # generic feature class
 # abstract class (for inheritance only)
-def class Feature:
+class Feature:
 
     _sourceTypes = None
     _name = 'DefaultFeature'
@@ -45,9 +45,9 @@ def class Feature:
         return np.nan
 
 # abstract class for timeseries-based features
-def class TimeseriesFeature(Feature):
+class TimeseriesFeature(Feature):
 
-    _sourceTypes = [DC.TimeseriesData]
+    _sourceTypes = [TimeseriesData]
     _name = 'TS_DefaultFeature'
 
     def __init__(self,dataSource,axis=0,line=0):
@@ -65,7 +65,7 @@ def class TimeseriesFeature(Feature):
     def calcFeature(self):
 
         vals = getDF_Line(self._dataSource._data,self._axis,self._line).values
-        ts = getDF_Line(self._dataSource._data,self._axis,C.TS_COL_NAME).values
+        ts = getDF_Line(self._dataSource._data,self._axis,TS_COL_NAME).values
 
         return self.featureFunc(vals,ts)
 
@@ -77,7 +77,7 @@ def class TimeseriesFeature(Feature):
         return np.nan
 
 # more specific feature classes
-def class Mean(TimeseriesFeature):
+class Mean(TimeseriesFeature):
 
     _name = 'Mean'
 
@@ -85,7 +85,7 @@ def class Mean(TimeseriesFeature):
 
         return np.nanmean(vals)
 
-def class StdDev(TimeseriesFeature):
+class StdDev(TimeseriesFeature):
 
     _name = 'StdDev'
 
@@ -93,7 +93,7 @@ def class StdDev(TimeseriesFeature):
 
         return np.nanstd(vals)
 
-def class Skewness(TimeseriesFeature):
+class Skewness(TimeseriesFeature):
 
     _name = 'Skew'
 
@@ -101,7 +101,7 @@ def class Skewness(TimeseriesFeature):
 
         return stats.skewness(vals,nan_policy='omit')
 
-def class Kurtosis(TimeseriesFeature):
+class Kurtosis(TimeseriesFeature):
 
     _name = 'Kurt'
 

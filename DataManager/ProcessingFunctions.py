@@ -43,7 +43,7 @@ def vectorsToRotation(vec1, vec2):
     return Rotation.from_matrix(rotation_matrix)
 
 # calculate euler angles from accel data, when magnitude close to 1g (within tolerance bounds)
-def getInclinations(accelTri, accelMag = None, tol=.1, gAxis = 0, eAxis = 'yzy'):
+def getInclinations(accelTri, accelMag = None, tol=None, gAxis = 0, eAxis = 'XYZ'):
     '''
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html
     '''

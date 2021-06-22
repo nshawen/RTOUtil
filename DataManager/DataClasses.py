@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-import ProcessingFunctions as PF
-import Features as F
-import Constants as C
+from scipy.stats import mode
+from .ProcessingFunctions import getInclinations
+from .Constants import *
 
 # Abstract classes (meant to be inherited only)
-def class Data:
+class Data():
 
     _name = 'DefaultData'
     features = []
@@ -20,7 +20,7 @@ def class Data:
             self.processData = processFunc
 
         # take in and process data source
-        self.parseData()
+        self._data = self.processData(self._dataSource)
 
         if not self.qualityCheck():
             print("loaded data doesn't match required format")
@@ -31,19 +31,22 @@ def class Data:
         for fm in self.features:
             f.append(fm(self._data))
 
-    def processData(self):
-        self._data = pd.read_csv(self._dataSource)
+    def processData(self,source):
+        return pd.read_csv(self._dataSource)
 
     def qualityCheck(self):
         return True
 
-def class TimeseriesData(Data):
-    def __init__(self,path,parseFunc=None,freq=None):
+class TimeseriesData(Data):
+
+    _name = 'DefaultTimeseries'
+
+    def __init__(self,path,parseFunc=None,name = _name,freq=None):
         Data.__init__(self,path,parseFunc)
 
         if freq is None:
-            ts = self._data[C.TS_COL_NAME]
-            freq = 1./np.mode(ts.diff().values)
+            ts = self._data[TS_COL_NAME]
+            freq = 1./mode(ts.diff().values).mode[0]
 
         self._freq = freq
         self._fs = 1./freq
@@ -51,11 +54,11 @@ def class TimeseriesData(Data):
     def qualityCheck(self):
         typeCheck = type(self._data)==pd.DataFrame
         if typeCheck:
-            timeCheck = C.TS_COL_NAME in self._data.columns
+            timeCheck = TS_COL_NAME in self._data.columns
         return typeCheck & timeCheck
 
 
-def class TriaxialTsData(TimeseriesData):
+class TriaxialTsData(TimeseriesData):
 
     _name = 'DefaultTriaxial'
     features = []
@@ -64,8 +67,8 @@ def class TriaxialTsData(TimeseriesData):
         #use base Timeseries quality check, then additional checks
         TSCheck = TimeseriesData.qualityCheck(self)
 
-        columnsAllowed = {C.TS_COL_NAME,C.X_AXIS_COL_NAME,
-                          C.Y_AXIS_COL_NAME,C.Z_AXIS_COL_NAME}
+        columnsAllowed = {TS_COL_NAME,X_AXIS_COL_NAME,
+                          Y_AXIS_COL_NAME,Z_AXIS_COL_NAME}
 
         columnsCheck = False
         indexCheck = False
@@ -76,7 +79,7 @@ def class TriaxialTsData(TimeseriesData):
 
         return TSCheck and (columnsCheck or indexCheck)
 
-def class ProcessedData(Data):
+class ProcessedData(Data):
 
     _name = 'DefaultProcData'
     _sourceTypes = []
@@ -84,7 +87,7 @@ def class ProcessedData(Data):
     def __init__(self,source,processFunc=None,name=_name):
 
         if self.checkSource(source):
-            Data.__init__(self,source,processFunc,name=)
+            Data.__init__(self,source,processFunc,name)
         else:
             print('Source type not allowed')
 
@@ -93,19 +96,23 @@ def class ProcessedData(Data):
 
 
 # Real, child classes (meant to be actively used in code)
-def class AccelData(TriaxialTsData):
+class AccelData(TriaxialTsData):
 
     _name = 'DefaultAccel'
     features = []
 
-def class InclinationData(TimeseriesData,ProcessedData):
+class InclinationData(TimeseriesData,ProcessedData):
 
     _name = 'DefaultInclin'
+    _sourceTypes = [AccelData]
 
-    def __init__(self,source,processFunc=None,name=_name):
+    def __init__(self,source,processFunc=None,name=_name,freq=None):
         if self.checkSource(source):
-            TimeseriesData.__init__(self,source,processFunc,name)
-            self.processData()
+            TimeseriesData.__init__(self,source,processFunc,name,source._freq)
+        else:
+            print('Source type not allowed')
 
-    def processData(self):
-        self._data = pd.apply(self._data, lambda x: np.atan2(x.xl_x,x.xl_y))
+    def processData(self,source):
+        inc = getInclinations(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
+        inc['Time'] = self._dataSource._data.Time
+        return inc
