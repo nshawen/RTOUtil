@@ -112,6 +112,10 @@ class AccelData(TriaxialTsData):
 
     _name = 'DefaultAccel'
 
+class GyroData(TriaxialTsData):
+
+    _name = 'DefaultGyro'
+
 class InclinationData(TimeseriesData,DerivedData):
 
     _name = 'DefaultInclin'
