@@ -18,21 +18,15 @@ class Data():
         self._dataSource = source
         self._name = name
 
-        # update processData function if given by user
+        # update _processData function if given by user
         if processFunc is not None:
-            self.processData = processFunc
+            self._processData = processFunc
 
         # take in and process data source
-        self._data = self.processData(self._dataSource)
+        self._data = self._processData(self._dataSource)
 
-        if not self.qualityCheck():
+        if not self._qualityCheck():
             print("loaded data doesn't match required format")
-
-    ## support functions
-    def computeFeatures(self):
-        f = []
-        for fm in self.features:
-            f.append(fm(self._data))
 
     def _addFeatures(self,features):
 
@@ -45,10 +39,10 @@ class Data():
         else:
             print('Invalid data types present')
 
-    def processData(self,source):
+    def _processData(self,source):
         return pd.read_csv(self._dataSource)
 
-    def qualityCheck(self):
+    def _qualityCheck(self):
         return True
 
 class TimeseriesData(Data):
@@ -65,7 +59,7 @@ class TimeseriesData(Data):
         self._freq = freq
         self._fs = 1./freq
 
-    def qualityCheck(self):
+    def _qualityCheck(self):
         typeCheck = type(self._data)==pd.DataFrame
         if typeCheck:
             timeCheck = self._data.index.name==TS_COL_NAME
@@ -76,9 +70,9 @@ class TriaxialTsData(TimeseriesData):
 
     _name = 'DefaultTriaxial'
 
-    def qualityCheck(self):
+    def _qualityCheck(self):
         #use base Timeseries quality check, then additional checks
-        tsCheck = TimeseriesData.qualityCheck(self)
+        tsCheck = TimeseriesData._qualityCheck(self)
 
         columnsAllowed = {X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME}
 
@@ -98,12 +92,12 @@ class DerivedData(Data):
 
     def __init__(self,source,processFunc=None,name=_name):
 
-        if self.checkSource(source):
+        if self._checkSource(source):
             Data.__init__(self,source,processFunc,name)
         else:
             print('Source type not allowed')
 
-    def checkSource(self,source):
+    def _checkSource(self,source):
         return any([isinstance(source,type) for type in self._sourceTypes])
 
 
@@ -122,11 +116,11 @@ class InclinationData(TimeseriesData,DerivedData):
     _sourceTypes = [AccelData]
 
     def __init__(self,source,processFunc=None,name=_name,freq=None):
-        if self.checkSource(source):
+        if self._checkSource(source):
             TimeseriesData.__init__(self,source,processFunc,name,source._freq)
         else:
             print('Source type not allowed')
 
-    def processData(self,source):
+    def _processData(self,source):
         inc = getInclinations(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
         return inc
