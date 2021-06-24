@@ -5,17 +5,21 @@ __all__ = ['mountFeatures']
 
 def mountFeatures(data,features):
 
+    featList=[]
+
     if type(features)!=list:
         features = [features]
 
-    for feature in features:
-        if issubclass(feature,TimeseriesFeature):
-            featureList = [feature(data,axis=0,line=c) for c in data._data.columns]
-        elif issubclass(feature,Feature):
-            featureList = [feature(data)]
-        else:
-            # todo improve warning/error messaging
-            print("Input is not a valid feature class")
-            featureList=[]
+    for feat in features:
+        #only add feature if it doesn't exist already
+        if feat not in data._featureTypes:
+            # identify relevant base feature type and apply feature to data
+            if issubclass(feat,TimeseriesFeature):
+                featList += [feat(data,axis=0,line=c) for c in data._data.columns]
+            elif issubclass(feat,Feature):
+                featList += [feat(data)]
+            else:
+                # todo: improve warning/error messaging
+                print("Input is not a valid feature class")
 
-        data.addFeatures(featureList)
+    data._addFeatures(featList)
