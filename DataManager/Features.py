@@ -49,7 +49,7 @@ class TimeseriesFeature(Feature):
     # feature function taking in one row of values and corresponding timestamps
     # outputs feature value
     # meant to be overridden in inheriting classes
-    def featureFunc(vals,ts):
+    def featureFunc(self,vals,ts):
 
         return np.nan
 
@@ -58,7 +58,7 @@ class Mean(TimeseriesFeature):
 
     _name = 'Mean'
 
-    def featureFunc(vals,ts):
+    def featureFunc(self,vals,ts):
 
         return np.nanmean(vals)
 
@@ -66,7 +66,7 @@ class StdDev(TimeseriesFeature):
 
     _name = 'StdDev'
 
-    def featureFunc(vals,ts):
+    def featureFunc(self,vals,ts):
 
         return np.nanstd(vals)
 
@@ -74,7 +74,7 @@ class Skewness(TimeseriesFeature):
 
     _name = 'Skew'
 
-    def featureFunc(vals,ts):
+    def featureFunc(self,vals,ts):
 
         return stats.skewness(vals,nan_policy='omit')
 
@@ -82,6 +82,6 @@ class Kurtosis(TimeseriesFeature):
 
     _name = 'Kurt'
 
-    def featureFunc(vals,ts):
+    def featureFunc(self,vals,ts):
 
         return stats.kurtosis(vals,nan_policy='omit')

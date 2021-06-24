@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import mode
+
 from .ProcessingFunctions import getInclinations
 from .Constants import *
+from .BaseFeature import Feature
 
 # Abstract classes (meant to be inherited only)
 class Data():
@@ -30,6 +32,15 @@ class Data():
         f = []
         for fm in self.features:
             f.append(fm(self._data))
+
+    def addFeatures(self,features):
+
+        if type(features)==list and all(isinstance(f,Feature) for f in features):
+            self.features+=features
+        elif isinstance(features,Feature):
+            self.features.append(features)
+        else:
+            print()
 
     def processData(self,source):
         return pd.read_csv(self._dataSource)
@@ -79,7 +90,7 @@ class TriaxialTsData(TimeseriesData):
 
         return TSCheck and (columnsCheck or indexCheck)
 
-class ProcessedData(Data):
+class DerivedData(Data):
 
     _name = 'DefaultProcData'
     _sourceTypes = []
@@ -92,7 +103,7 @@ class ProcessedData(Data):
             print('Source type not allowed')
 
     def checkSource(self,source):
-        return type(source) in self._sourceTypes
+        return any([isinstance(source,type) for type in self._sourceTypes])
 
 
 # Real, child classes (meant to be actively used in code)
@@ -101,7 +112,7 @@ class AccelData(TriaxialTsData):
     _name = 'DefaultAccel'
     features = []
 
-class InclinationData(TimeseriesData,ProcessedData):
+class InclinationData(TimeseriesData,DerivedData):
 
     _name = 'DefaultInclin'
     _sourceTypes = [AccelData]
