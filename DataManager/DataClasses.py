@@ -31,10 +31,10 @@ class Data():
     def _addFeatures(self,features):
 
         if type(features)==list and all(isinstance(f,Feature) for f in features):
-            self.features+=features
+            self._features+=features
             for f in features: self._featureTypes.add(type(f))
         elif isinstance(features,Feature):
-            self.features.append(features)
+            self._features.append(features)
             self._featureTypes.add(type(features))
         else:
             print('Invalid data types present')
