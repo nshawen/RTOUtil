@@ -1,48 +1,25 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
+
 from .DataClasses import TimeseriesData
 from .Constants import *
+from .BaseFeature import Feature
 
 def getDF_Line(df,axis,line):
 
     if type(line)==str:
         if axis==0:
-            return df.loc[line,:]
-        elif axis==1:
             return df.loc[:,line]
+        elif axis==1:
+            return df.loc[line,:]
     elif type(line)==int:
         if axis==0:
-            return df.iloc[line,:]
-        elif axis==1:
             return df.iloc[:,line]
+        elif axis==1:
+            return df.iloc[line,:]
 
     return None
-
-# generic feature class
-# abstract class (for inheritance only)
-class Feature:
-
-    _sourceTypes = None
-    _name = 'DefaultFeature'
-    # default feature value
-    _value = np.nan
-    _dataSource = None
-
-    def __init__(self,dataSource):
-
-        self._dataSource = dataSource
-
-        self._name = '_'.join([dataSource._name, self._name])
-
-        if type(dataSource) in sourceTypes:
-            self._value = self.calcFeature()
-        else:
-            print('Data source provided not compatible with this feature')
-
-    def calcFeature(self):
-
-        return np.nan
 
 # abstract class for timeseries-based features
 class TimeseriesFeature(Feature):
