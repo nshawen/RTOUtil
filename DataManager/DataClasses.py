@@ -10,7 +10,8 @@ from .BaseFeature import Feature
 class Data():
 
     _name = 'DefaultData'
-    features = []
+    _features = []
+    _featureTypes = set()
 
     def __init__(self,source,processFunc=None,name=_name):
         # store data filepath and name
@@ -33,14 +34,16 @@ class Data():
         for fm in self.features:
             f.append(fm(self._data))
 
-    def addFeatures(self,features):
+    def _addFeatures(self,features):
 
         if type(features)==list and all(isinstance(f,Feature) for f in features):
             self.features+=features
+            for f in features: self._featureTypes.add(type(f))
         elif isinstance(features,Feature):
             self.features.append(features)
+            self._featureTypes.add(type(features))
         else:
-            print()
+            print('Invalid data types present')
 
     def processData(self,source):
         return pd.read_csv(self._dataSource)
@@ -56,8 +59,8 @@ class TimeseriesData(Data):
         Data.__init__(self,path,parseFunc)
 
         if freq is None:
-            ts = self._data[TS_COL_NAME]
-            freq = 1./mode(ts.diff().values).mode[0]
+            ts = self._data.index
+            freq = 1./mode(np.diff(ts)).mode[0]
 
         self._freq = freq
         self._fs = 1./freq
@@ -65,30 +68,28 @@ class TimeseriesData(Data):
     def qualityCheck(self):
         typeCheck = type(self._data)==pd.DataFrame
         if typeCheck:
-            timeCheck = TS_COL_NAME in self._data.columns
+            timeCheck = self._data.index.name==TS_COL_NAME
         return typeCheck & timeCheck
 
 
 class TriaxialTsData(TimeseriesData):
 
     _name = 'DefaultTriaxial'
-    features = []
 
     def qualityCheck(self):
         #use base Timeseries quality check, then additional checks
-        TSCheck = TimeseriesData.qualityCheck(self)
+        tsCheck = TimeseriesData.qualityCheck(self)
 
-        columnsAllowed = {TS_COL_NAME,X_AXIS_COL_NAME,
-                          Y_AXIS_COL_NAME,Z_AXIS_COL_NAME}
+        columnsAllowed = {X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME}
 
         columnsCheck = False
         indexCheck = False
 
-        if TSCheck:
+        if tsCheck:
             columnsCheck = set(self._data.columns)==columnsAllowed
             indexCheck = set(self._data.columns)==columnsAllowed
 
-        return TSCheck and (columnsCheck or indexCheck)
+        return tsCheck and (columnsCheck or indexCheck)
 
 class DerivedData(Data):
 
@@ -110,7 +111,6 @@ class DerivedData(Data):
 class AccelData(TriaxialTsData):
 
     _name = 'DefaultAccel'
-    features = []
 
 class InclinationData(TimeseriesData,DerivedData):
 
@@ -125,5 +125,4 @@ class InclinationData(TimeseriesData,DerivedData):
 
     def processData(self,source):
         inc = getInclinations(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
-        inc['Time'] = self._dataSource._data.Time
         return inc
