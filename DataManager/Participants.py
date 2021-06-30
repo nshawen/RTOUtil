@@ -4,22 +4,22 @@ class Participant():
 
     _subjID
     _cohort = None
-    _timepoints = []
+    _sessions = []
 
-    def __init__(self,timepoints={},id = None, cohort=None):
+    def __init__(self,sessions={},id = None, cohort=None):
 
         if not self._checkID(id):
             print('Invalid subject ID')
             return
 
         self._subjID = id; self._cohort = cohort
-        self.addData(timepoints)
+        self.addData(sessions)
 
-    def addTimepoints(self,timepointDict):
+    def addsessions(self,timepointDict):
 
         for name in timepointDict.keys():
 
-            self._timepoints.append(timepointDict[name](self))
+            self._sessions.append(timepointDict[name](self))
 
     def _checkID(self,id):
 
@@ -30,9 +30,9 @@ class Adult(Participant):
     _age = np.nan
     _ageUnits = None
 
-    def __init__(self,timepoints={},id = None,cohort=None,age=np.nan,ageUnits=None):
+    def __init__(self,sessions={},id = None,cohort=None,age=np.nan,ageUnits=None):
 
-        Participant.__init__(self,timepoints,cohort)
+        Participant.__init__(self,sessions,cohort)
 
         self._age = age; self._ageUnits = _ageUnits
 
@@ -41,8 +41,8 @@ class Infant(Participant):
     _DOB = np.datetime64('NaT')
     _termDate = np.datetime64('NaT')
 
-    def __init__(self,timepoints={},id = None,cohort=None,dob=np.datetime64('NaT'),termDate=np.datetime64('NaT')):
+    def __init__(self,sessions={},id = None,cohort=None,dob=np.datetime64('NaT'),termDate=np.datetime64('NaT')):
 
-        Participant.__init__(self,timepoints,cohort)
+        Participant.__init__(self,sessions,cohort)
 
         self._DOB = dob; self._termDate = _termDate

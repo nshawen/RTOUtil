@@ -1,6 +1,6 @@
 import numpy as np
 
-class Timepoint():
+class Session():
 
     _subjID = None
     _time = np.datetime64('NaT')
@@ -31,7 +31,7 @@ class Timepoint():
 
 class Event():
 
-    _parentTimepoint = None
+    _parentSession = None
 
     def __init__(self,timepoint,data={}):
 
