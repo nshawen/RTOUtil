@@ -2,47 +2,49 @@ import numpy as np
 
 class Participant():
 
-    _subjID
+    _subjID = 'DefaultID'
     _cohort = None
     _sessions = []
+    _dataPath = None
 
-    def __init__(self,sessions={},id = None, cohort=None):
+    def __init__(self,path = None,id = None,**kwargs):
 
         if not self._checkID(id):
             print('Invalid subject ID')
             return
 
-        self._subjID = id; self._cohort = cohort
-        self.addData(sessions)
+        self._dataPath = path; self._subjID = id
 
-    def addsessions(self,timepointDict):
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
 
-        for name in timepointDict.keys():
-
-            self._sessions.append(timepointDict[name](self))
+        self.findSessions()
 
     def _checkID(self,id):
-
         return True
+
+    def findSessions():
+        pass
 
 class Adult(Participant):
 
     _age = np.nan
     _ageUnits = None
 
-    def __init__(self,sessions={},id = None,cohort=None,age=np.nan,ageUnits=None):
+    def __init__(self,path=None,id = None,**kwargs):
 
-        Participant.__init__(self,sessions,cohort)
+        Participant.__init__(self,path,id,**kwargs)
 
-        self._age = age; self._ageUnits = _ageUnits
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
 
 class Infant(Participant):
 
-    _DOB = np.datetime64('NaT')
-    _termDate = np.datetime64('NaT')
+    _relDOB = np.timedelta64(0)
 
-    def __init__(self,sessions={},id = None,cohort=None,dob=np.datetime64('NaT'),termDate=np.datetime64('NaT')):
+    def __init__(self,path=None,id = None,**kwargs):
 
-        Participant.__init__(self,sessions,cohort)
+        Participant.__init__(self,path,id,**kwargs)
 
-        self._DOB = dob; self._termDate = _termDate
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])

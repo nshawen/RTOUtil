@@ -12,10 +12,13 @@ class Data():
     _name = 'DefaultData'
     _features = []
     _featureTypes = set()
+    _dataSource = None
+    _dataContext = None
 
-    def __init__(self,source,processFunc=None,name=_name):
+    def __init__(self,source,processFunc=None,name=_name,context=None):
         # store data filepath and name
         self._dataSource = source
+        self._dataContext = context
         self._name = name
 
         # update _processData function if given by user
@@ -49,12 +52,15 @@ class TimeseriesData(Data):
 
     _name = 'DefaultTimeseries'
 
-    def __init__(self,path,parseFunc=None,name = _name,freq=None):
+    def __init__(self,path,parseFunc=None,name=_name,freq=None):
         Data.__init__(self,path,parseFunc)
 
         if freq is None:
             ts = self._data.index
-            freq = 1./mode(np.diff(ts)).mode[0]
+            if len(ts)>0:
+                freq = 1./mode(np.diff(ts)).mode[0]
+            else:
+                freq = np.nan
 
         self._freq = freq
         self._fs = 1./freq
@@ -104,15 +110,15 @@ class DerivedData(Data):
 # Real, child classes (meant to be actively used in code)
 class AccelData(TriaxialTsData):
 
-    _name = 'DefaultAccel'
+    _name = 'Accel'
 
 class GyroData(TriaxialTsData):
 
-    _name = 'DefaultGyro'
+    _name = 'Gyro'
 
 class InclinationData(TimeseriesData,DerivedData):
 
-    _name = 'DefaultInclin'
+    _name = 'Inclin'
     _sourceTypes = [AccelData]
 
     def __init__(self,source,processFunc=None,name=_name,freq=None):

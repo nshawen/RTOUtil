@@ -2,45 +2,40 @@ import numpy as np
 
 class Session():
 
-    _subjID = None
+    _participant = None
+    # datetime/timedelta indicating when session occured
+    # reference datetime _timeRef needed for timedelta _time values
     _time = np.datetime64('NaT')
     _timeRef = np.datetime64('NaT')
+    _dur = np.timedelta64(0)
+    _name = 'DefaultSession'
+    _dataPath = None
 
     _events = []
     _data = []
 
-    def __init__(self,data={},events={},time=np.datetime64('NaT'),ref=np.datetime64('NaT')):
+    def __init__(self,part,**kwargs):
 
-        self._time = time; self._timeRef = ref
+        self._participant = part
 
-        self.addData(data)
-        self.addEvents(events)
-
-    def addData(self,dataDict):
-
-        for name in dataDict.keys():
-
-            self._data.append(dataDict[name](self))
-
-    def addEvents(self,eventDict):
-
-        for name in eventDict.keys():
-
-            self._events.append(eventDict[name](self))
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
 
 
 class Event():
 
+    _name = 'DefaultEvent'
+    _dataPath = None
     _parentSession = None
+    _startTime = np.datetime64('NaT')
+    _endTime = np.datetime64('NaT')
+    _eventTime = np.datetime64('NaT')
+    _window = np.timedelta64(0)
+    _data = []
 
-    def __init__(self,timepoint,data={}):
+    def __init__(self,session,**kwargs):
 
-        self._parentTimepoint = timepoint
+        self._parentSession = session
 
-        self.addData(data)
-
-    def addData(self,dataDict):
-
-        for name in dataDict.keys():
-
-            self._data.append(dataDict[name](self))
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
