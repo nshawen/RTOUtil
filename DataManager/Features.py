@@ -36,13 +36,13 @@ class TimeseriesFeature(Feature):
         # store source info and calculate feature
         Feature.__init__(self,dataSource)
 
-        # update base name to include and field name
+        # update base name to include source and field names
         self._name = '_'.join([self._name, str(self._line)])
 
     def calcFeature(self):
 
         vals = getDF_Line(self._dataSource._data,self._axis,self._line).values
-        ts = getDF_Line(self._dataSource._data,self._axis,TS_COL_NAME).values
+        ts = self._dataSource._data.index.values
 
         return self.featureFunc(vals,ts)
 
@@ -76,7 +76,7 @@ class Skewness(TimeseriesFeature):
 
     def featureFunc(self,vals,ts):
 
-        return stats.skewness(vals,nan_policy='omit')
+        return stats.skew(vals,nan_policy='omit')
 
 class Kurtosis(TimeseriesFeature):
 
