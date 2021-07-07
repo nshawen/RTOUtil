@@ -65,13 +65,12 @@ class TimeseriesData(Data):
         Data.__init__(self,source,context,**kwargs)
 
         # pull freq data from original signal
-        if freq is np.nan:
+        if self._freq is np.nan:
             ts = self._data.index
             if len(ts)>0:
-                freq = 1./mode(np.diff(ts)).mode[0]
+                self._freq = 1./mode(np.diff(ts)).mode[0]
 
-        self._freq = freq
-        self._fs = 1./freq
+        self._fs = 1./self._freq
 
     def _qualityCheck(self):
         typeCheck = type(self._data)==pd.DataFrame
@@ -114,7 +113,7 @@ class DerivedData(Data):
             print('Source type not allowed')
 
     def _checkSource(self,source):
-        return any([isinstance(source,type) for type in self._sourceTypes])
+        return any([isinstance(source,validType) for validType in self._sourceTypes])
 
 
 # Real, child classes (meant to be actively used in code)
@@ -129,7 +128,7 @@ class GyroData(TriaxialTsData):
 class InclinationData(TimeseriesData,DerivedData):
 
     _name = 'Inclin'
-    _sourceTypes = (AccelData)
+    _sourceTypes = (AccelData,)
 
     def __init__(self,source,context,**kwargs):
 
