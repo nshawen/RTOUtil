@@ -51,7 +51,7 @@ class Data():
     def getFeatures(self):
         vals = [f._value for f in self._features]
         names = [f._name for f in self._features]
-        F = pd.DataFrame(index=[0],columns=names,data=vals)
+        F = pd.DataFrame(index=[0],columns=names,data=np.array(vals).reshape((1,-1)))
         return F
 
 class TimeseriesData(Data):

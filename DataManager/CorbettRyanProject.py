@@ -51,13 +51,13 @@ def findData_Event(event):
 
     ds = pd.HDFStore(path)
     keys = [k for k in ds.keys() if event._name in k]
-    sensors = [k.split('/')[2] for k in keys]
+    sensors = [k.split('/')[3] for k in keys]
     ds.close()
 
     for k,s in zip(keys,sensors):
-        event._data.append(AccelData(path,event,_processData=lambda x: loadAccel(x,k),name='_'.join(['Accel',event._name,s])))
-        event._data.append(InclinationData(event._data[-1],event,name='_'.join(['Inclin',event._name,s])))
-        event._data.append(GyroData(path,event,_processData=lambda x: loadGyro(x,k),name='_'.join(['Gyro',event._name,s])))
+        event._data.append(AccelData(path,event,_processData=lambda x: loadAccel(x,k),_name='_'.join(['Accel',s])))
+        event._data.append(InclinationData(event._data[-1],event,_name='_'.join(['Inclin',s])))
+        event._data.append(GyroData(path,event,_processData=lambda x: loadGyro(x,k),_name='_'.join(['Gyro',s])))
 
     for d in event._data:
         mountFeatures(d,[Mean,StdDev,Skewness,Kurtosis])
@@ -80,7 +80,7 @@ class Corbett(Infant):
 
     def findSessions(self):
 
-        files = [f for f in os.listdir(self._dataPath) if self._subjID in f]
+        files = [f for f in os.listdir(self._dataPath) if (self._subjID in f) and ('3M' in f)]
         print(self._subjID,files)
 
         for f in files:
