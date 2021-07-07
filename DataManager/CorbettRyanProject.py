@@ -51,7 +51,7 @@ def findData_Event(event):
 
     ds = pd.HDFStore(path)
     keys = [k for k in ds.keys() if event._name in k]
-    sensors = [k.split('/')[3] for k in keys]
+    sensors = [k.split('/')[2] for k in keys]
     ds.close()
 
     for k,s in zip(keys,sensors):
