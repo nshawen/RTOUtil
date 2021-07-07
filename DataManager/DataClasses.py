@@ -10,20 +10,20 @@ from .BaseFeature import Feature
 class Data():
 
     _name = 'DefaultData'
-    _features = []
-    _featureTypes = set()
     _dataSource = None
     _dataContext = None
 
-    def __init__(self,source,processFunc=None,name=_name,context=None):
-        # store data filepath and name
+    def __init__(self,source,context,**kwargs):
+        # store data source and context (required inputs)
         self._dataSource = source
         self._dataContext = context
-        self._name = name
+        # these need to be instance variables because they are mutable
+        self._features = []
+        self._featureTypes = set()
 
-        # update _processData function if given by user
-        if processFunc is not None:
-            self._processData = processFunc
+        # set all other passed attributes
+        for arg in kwargs:
+            setattr(self,arg,kwargs[arg])
 
         # take in and process data source
         self._data = self._processData(self._dataSource)
@@ -51,16 +51,18 @@ class Data():
 class TimeseriesData(Data):
 
     _name = 'DefaultTimeseries'
+    _freq = np.nan
+    _fs = np.nan
+    _interp = False
 
-    def __init__(self,path,parseFunc=None,name=_name,freq=None):
-        Data.__init__(self,path,parseFunc)
+    def __init__(self,source,context,**kwargs):
+        Data.__init__(self,source,context,**kwargs)
 
-        if freq is None:
+        # pull freq data from original signal
+        if freq is np.nan:
             ts = self._data.index
             if len(ts)>0:
                 freq = 1./mode(np.diff(ts)).mode[0]
-            else:
-                freq = np.nan
 
         self._freq = freq
         self._fs = 1./freq
@@ -94,12 +96,14 @@ class TriaxialTsData(TimeseriesData):
 class DerivedData(Data):
 
     _name = 'DefaultProcData'
-    _sourceTypes = []
+    # needs to be a tuple to be immutable
+    # DON'T want any mutable class variables to avoid odd behaviors
+    _sourceTypes = ()
 
-    def __init__(self,source,processFunc=None,name=_name):
+    def __init__(self,source,context,**kwargs):
 
         if self._checkSource(source):
-            Data.__init__(self,source,processFunc,name)
+            Data.__init__(self,source,context,**kwargs)
         else:
             print('Source type not allowed')
 
@@ -119,11 +123,12 @@ class GyroData(TriaxialTsData):
 class InclinationData(TimeseriesData,DerivedData):
 
     _name = 'Inclin'
-    _sourceTypes = [AccelData]
+    _sourceTypes = (AccelData)
 
-    def __init__(self,source,processFunc=None,name=_name,freq=None):
+    def __init__(self,source,context,**kwargs):
+
         if self._checkSource(source):
-            TimeseriesData.__init__(self,source,processFunc,name,source._freq)
+            TimeseriesData.__init__(self,source,context,**kwargs)
         else:
             print('Source type not allowed')
 

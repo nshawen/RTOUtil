@@ -4,7 +4,7 @@ import numpy as np
 # abstract class (for inheritance only)
 class Feature:
 
-    _sourceTypes = None
+    _sourceTypes = ()
     _name = 'DefaultFeature'
     # default feature value
     _value = np.nan

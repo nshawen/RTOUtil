@@ -4,7 +4,6 @@ class Participant():
 
     _subjID = 'DefaultID'
     _cohort = None
-    _sessions = []
     _dataPath = None
 
     def __init__(self,path = None,id = None,**kwargs):
@@ -12,6 +11,8 @@ class Participant():
         if not self._checkID(id):
             print('Invalid subject ID')
             return
+
+        self._sessions = []
 
         self._dataPath = path; self._subjID = id
 

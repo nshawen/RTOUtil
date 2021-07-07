@@ -51,13 +51,13 @@ def findData_Event(event):
 
     ds = pd.HDFStore(path)
     keys = [k for k in ds.keys() if event._name in k]
-    sensors = [k.split('/')[1] for k in keys]
+    sensors = [k.split('/')[2] for k in keys]
     ds.close()
 
     for k,s in zip(keys,sensors):
-        event._data.append(AccelData(path,lambda x: loadAccel(x,k),name='_'.join(['Accel',event._name,s])))
-        event._data.append(InclinationData(event._data[-1],name='_'.join(['Inclin',event._name,s])))
-        event._data.append(GyroData(path,lambda x: loadGyro(x,k),name='_'.join(['Gyro',event._name,s])))
+        event._data.append(AccelData(path,event,_processData=lambda x: loadAccel(x,k),name='_'.join(['Accel',event._name,s])))
+        event._data.append(InclinationData(event._data[-1],event,name='_'.join(['Inclin',event._name,s])))
+        event._data.append(GyroData(path,event,_processData=lambda x: loadGyro(x,k),name='_'.join(['Gyro',event._name,s])))
 
     for d in event._data:
         mountFeatures(d,[Mean,StdDev,Skewness,Kurtosis])
@@ -67,7 +67,7 @@ def findEvents(session):
     path = session._dataPath
 
     ds = pd.HDFStore(path)
-    events = set([k.split('/')[0] for k in ds.keys()])
+    events = set([k.split('/')[1] for k in ds.keys()])
     ds.close()
 
     for e in events:
@@ -82,12 +82,11 @@ class Corbett(Infant):
 
         files = [f for f in os.listdir(self._dataPath) if self._subjID in f]
         print(self._subjID,files)
-        sessionNames = [f.replace('_','.').split('.')[1] for f in files]
 
         for f in files:
             try:
                 name = f.replace('_','.').split('.')[1]
-                self._sessions.append(Session(self,_dataPath=self._dataPath/f))
+                self._sessions.append(Session(self,_dataPath=self._dataPath/f,_name=name))
             except:
                 continue
 

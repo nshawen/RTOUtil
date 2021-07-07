@@ -11,12 +11,11 @@ class Session():
     _name = 'DefaultSession'
     _dataPath = None
 
-    _events = []
-    _data = []
-
     def __init__(self,part,**kwargs):
 
         self._participant = part
+        self._events = []
+        self._data = []
 
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
@@ -31,10 +30,10 @@ class Event():
     _endTime = np.datetime64('NaT')
     _eventTime = np.datetime64('NaT')
     _window = np.timedelta64(0)
-    _data = []
 
     def __init__(self,session,**kwargs):
 
+        self._data = []
         self._parentSession = session
 
         for arg in kwargs:

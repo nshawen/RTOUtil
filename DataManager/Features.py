@@ -24,7 +24,7 @@ def getDF_Line(df,axis,line):
 # abstract class for timeseries-based features
 class TimeseriesFeature(Feature):
 
-    _sourceTypes = [TimeseriesData]
+    _sourceTypes = (TimeseriesData)
     _name = 'TS_DefaultFeature'
 
     def __init__(self,dataSource,axis=0,line=0):
