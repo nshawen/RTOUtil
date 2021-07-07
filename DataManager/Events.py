@@ -49,4 +49,4 @@ class Event():
         F = [d.getFeatures() for d in self._data]
         F = pd.concat(F,axis=1)
         F.columns = ['_'.join([self._name,c]) for c in F.columns]
-        return pd.concat(F,axis=1)
+        return F
