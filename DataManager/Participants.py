@@ -27,6 +27,11 @@ class Participant():
     def findSessions():
         pass
 
+    def getFeatures(self):
+        F = [s.getFeatures() for s in self._sessions]
+        F = pd.concat(F,axis=0,ignore_index=True)
+        F.index = [s._name for s in self._sessions]
+
 class Adult(Participant):
 
     _age = np.nan

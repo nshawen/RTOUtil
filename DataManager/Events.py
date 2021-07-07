@@ -20,6 +20,9 @@ class Session():
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
 
+    def getFeatures(self):
+        F = [e.getFeatures() for e in self._events]
+        return pd.concat(F,axis=1)
 
 class Event():
 
@@ -38,3 +41,7 @@ class Event():
 
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
+
+    def getFeatures(self):
+        F = [d.getFeatures() for d in self._data]
+        return pd.concat(F,axis=1)
