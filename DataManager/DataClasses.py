@@ -141,10 +141,17 @@ class InclinationData(TimeseriesData,DerivedData):
         inc = getInclinations(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
         return inc
 
-class MagnitudeData(DerivedData):
+class MagnitudeData(TimeseriesData,DerivedData):
 
     _name = 'Mag'
     _sourceTypes = (TriaxialTsData,)
+
+    def __init__(self,source,context,**kwargs):
+
+        if self._checkSource(source):
+            TimeseriesData.__init__(self,source,context,**kwargs)
+        else:
+            print('Source type not allowed')
 
     def _processData(self,source):
         mag = getMagnitude(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
