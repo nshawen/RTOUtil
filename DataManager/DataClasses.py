@@ -140,3 +140,12 @@ class InclinationData(TimeseriesData,DerivedData):
     def _processData(self,source):
         inc = getInclinations(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
         return inc
+
+class MagnitudeData(DerivedData):
+
+    _name = 'Mag'
+    _sourceTypes = (TriaxialTsData,)
+
+    def _processData(self,source):
+        mag = getMagnitude(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
+        return mag

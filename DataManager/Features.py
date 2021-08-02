@@ -27,17 +27,14 @@ class TimeseriesFeature(Feature):
     _sourceTypes = (TimeseriesData,)
     _name = 'TS_DefaultFeature'
 
-    def __init__(self,dataSource,axis=0,line=0):
+    def __init__(self,dataSource,axis=0,line=0,**kwargs):
 
         # store axis/column info for feature calculation
         self._axis = axis
         self._line = line
 
         # store source info and calculate feature
-        Feature.__init__(self,dataSource)
-
-        # update base name to include source and field names
-        self._name = '_'.join([self._name, str(self._line)])
+        Feature.__init__(self,dataSource,**kwargs)
 
     def calcFeature(self):
 
@@ -46,12 +43,37 @@ class TimeseriesFeature(Feature):
 
         return self.featureFunc(vals,ts)
 
+    def addNamePrefix(self):
+        # include source and field names
+        self._name = '_'.join([dataSource._name, str(self._line), self._name])
+
     # feature function taking in one row of values and corresponding timestamps
     # outputs feature value
     # meant to be overridden in inheriting classes
     def featureFunc(self,vals,ts):
 
         return np.nan
+
+class MultiSourceFeature(Feature):
+
+    _dataSource = ()
+    _name = 'Multi_DefaultFeature'
+    _minLen = 2
+    _maxLen = None
+
+    def __init__(self,dataSources):
+
+        self._dataSource = tuple([source for source in dataSources])
+
+    def addNamePrefix(self):
+        self._name = '_'.join([source._name for source in self._dataSource]+[self._name])
+
+    def validateSources(self):
+        if all([any([isinstance(source,dataType) for dataType in self._sourceTypes]) for source in dataSource]):
+            return True
+        else:
+            print('A data source provided is not compatible with this feature')
+            return False
 
 # more specific feature classes
 class Mean(TimeseriesFeature):
