@@ -20,7 +20,7 @@ class Feature:
 
         self.addNamePrefix()
 
-        if validateSources():
+        if self.validateSources():
             self._value = self.calcFeature()
 
     def calcFeature(self):
@@ -29,7 +29,7 @@ class Feature:
 
     def validateSources(self):
 
-        if any([isinstance(dataSource,dataType) for dataType in self._sourceTypes]):
+        if any([isinstance(self._dataSource,dataType) for dataType in self._sourceTypes]):
             return True
         else:
             print('Data source provided not compatible with this feature')
@@ -37,4 +37,4 @@ class Feature:
 
     def addNamePrefix(self):
 
-        self._name = '_'.join([dataSource._name, self._name])
+        self._name = '_'.join([self._dataSource._name, self._name])
