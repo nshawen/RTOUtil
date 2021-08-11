@@ -23,7 +23,7 @@ class Session():
 
     def getFeatures(self):
         F = [e.getFeatures() for e in self._events]
-        F = pd.concat(F,axis=1)
+        F = pd.concat(F,axis=1).copy()
         F['Session'] = self._name
         return F
 
@@ -47,6 +47,6 @@ class Event():
 
     def getFeatures(self):
         F = [d.getFeatures() for d in self._data]
-        F = pd.concat(F,axis=1)
+        F = pd.concat(F,axis=1).copy()
         F.columns = ['_'.join([self._name,c]) for c in F.columns]
         return F

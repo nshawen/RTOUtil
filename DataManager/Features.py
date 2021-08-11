@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 
-from .DataClasses import TimeseriesData
+from .DataClasses import TimeseriesData, XCorrData
 from .Constants import *
 from .BaseFeature import Feature
 
@@ -45,7 +45,7 @@ class TimeseriesFeature(Feature):
 
     def addNamePrefix(self):
         # include source and field names
-        self._name = '_'.join([dataSource._name, str(self._line), self._name])
+        self._name = '_'.join([self._dataSource._name, str(self._line), self._name])
 
     # feature function taking in one row of values and corresponding timestamps
     # outputs feature value
@@ -107,3 +107,12 @@ class Kurtosis(TimeseriesFeature):
     def featureFunc(self,vals,ts):
 
         return stats.kurtosis(vals,nan_policy='omit')
+
+class PeakLag(Feature):
+
+    _name = 'Lag@Max'
+    _sourceTypes = (XCorrData,)
+
+    def featureFunc(self):
+
+        return self._dataSource._data.idxmax()

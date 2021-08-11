@@ -30,7 +30,7 @@ class Participant():
 
     def getFeatures(self):
         F = [s.getFeatures() for s in self._sessions]
-        F = pd.concat(F,axis=0,ignore_index=True)
+        F = pd.concat(F,axis=0,ignore_index=True).copy()
         F['Session'] = [s._name for s in self._sessions]
         return F
 
