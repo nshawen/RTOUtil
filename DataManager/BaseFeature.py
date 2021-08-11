@@ -18,7 +18,7 @@ class Feature:
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
 
-        addNamePrefix(self)
+        self.addNamePrefix()
 
         if validateSources():
             self._value = self.calcFeature()
