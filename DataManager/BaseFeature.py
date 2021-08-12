@@ -7,7 +7,7 @@ class Feature:
     _sourceTypes = ()
     _name = 'DefaultFeature'
     # default feature value
-    _value = np.nan
+    _value = None
     _dataSource = None
 
     def __init__(self,dataSource,**kwargs):
@@ -25,7 +25,7 @@ class Feature:
 
     def calcFeature(self):
 
-        return np.nan
+        return self.featureFunc()
 
     def validateSources(self):
 
@@ -38,3 +38,7 @@ class Feature:
     def addNamePrefix(self):
 
         self._name = '_'.join([self._dataSource._name, self._name])
+
+    def featureFunc(self):
+
+        return np.nan

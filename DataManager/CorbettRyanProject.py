@@ -19,9 +19,13 @@ def mountFeatures(data,features):
         if feat not in data._featureTypes:
             # identify relevant base feature type and apply feature to data
             if issubclass(feat,TimeseriesFeature):
-                featList += [feat(data,axis=0,line=c) for c in data._data.columns]
+                fs = [feat(data,axis=0,line=c) for c in data._data.columns]
+                if any([f._value is not None for f in fs]):
+                    featList += fs
             elif issubclass(feat,Feature):
-                featList += [feat(data)]
+                f = feat(data)
+                if f._value is not None:
+                    featList += [f]
             else:
                 # todo: improve warning/error messaging
                 print("Input is not a valid feature class")

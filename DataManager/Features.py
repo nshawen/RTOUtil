@@ -24,7 +24,7 @@ def getDF_Line(df,axis,line):
 # abstract class for timeseries-based features
 class TimeseriesFeature(Feature):
 
-    _sourceTypes = (TimeseriesData,)
+    _sourceTypes = (TimeseriesData,XCorrData)
     _name = 'TS_DefaultFeature'
 
     def __init__(self,dataSource,axis=0,line=0,**kwargs):
@@ -114,5 +114,4 @@ class PeakLag(Feature):
     _sourceTypes = (XCorrData,)
 
     def featureFunc(self):
-
-        return self._dataSource._data.idxmax()
+        return self._dataSource._data.idxmax().values[0]
