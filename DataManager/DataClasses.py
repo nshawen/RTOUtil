@@ -190,6 +190,6 @@ class XCorrData(DerivedData):
             xcorr = pd.DataFrame(index=lags,data=corr,columns=['XCorr'])
         else:
 
-            xcorr = pd.DataFrame([],columns=['XCorr'])
+            xcorr = pd.DataFrame([],columns=['XCorr'],dtype='float64')
 
         return xcorr
