@@ -159,8 +159,7 @@ class MagnitudeData(TimeseriesData,DerivedData):
 
     def _processData(self):
         mag = getMagnitude(self._dataSource._data.loc[:,[X_AXIS_COL_NAME,Y_AXIS_COL_NAME,Z_AXIS_COL_NAME]])
-        mag = pd.DataFrame(index=mag.index,data=mag.values,columns=['Mag'])
-        return mag
+        return pd.DataFrame(mag,columns=['Mag'])
 
 class XCorrData(DerivedData):
     ###
