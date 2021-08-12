@@ -114,4 +114,7 @@ class PeakLag(Feature):
     _sourceTypes = (XCorrData,)
 
     def featureFunc(self):
-        return self._dataSource._data.idxmax().values[0]
+        if len(self._dataSource._data):
+            return self._dataSource._data.idxmax().values[0]
+        else:
+            return np.nan
