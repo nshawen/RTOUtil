@@ -20,7 +20,10 @@ class Participant():
         for arg in kwargs:
             setattr(self,arg,kwargs[arg])
 
-        self.findSessions()
+        # switched to calling self.findSessions() outside of __init__
+        # to improve debugging
+        
+        # self.findSessions()
 
     def _checkID(self,id):
         return True
