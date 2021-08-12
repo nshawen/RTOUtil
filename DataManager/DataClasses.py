@@ -182,7 +182,14 @@ class XCorrData(DerivedData):
         source1 = self._dataSource[0]._data.loc[:,self._s1col].values
         source2 = self._dataSource[1]._data.loc[:,self._s2col].values
 
-        lags = correlation_lags(len(source1),len(source2))
-        corr = correlate(source1,source2)
+        if len(source1) and len(source2):
 
-        return pd.DataFrame(index=lags,data=corr)
+            lags = correlation_lags(len(source1),len(source2))
+            corr = correlate(source1,source2)
+
+            xcorr = pd.DataFrame(index=lags,data=corr,columns=['XCorr'])
+        else:
+
+            xcorr = pd.DataFrame([],columns=['XCorr'])
+
+        return xcorr
