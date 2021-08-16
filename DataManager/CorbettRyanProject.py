@@ -131,7 +131,7 @@ class Corbett(Infant):
 
     def findSessions(self):
 
-        files = [f for f in os.listdir(self._dataPath) if (self._subjID in f) and ('3M' in f)]
+        files = [f for f in os.listdir(self._dataPath) if (self._subjID in f)]# and ('3M' in f)]
         print(self._subjID,files)
 
         for f in files:
