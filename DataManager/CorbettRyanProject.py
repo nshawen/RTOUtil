@@ -72,6 +72,16 @@ def findData_Event(event):
     # get XCorr for left/right pairs
     # won't work for <3M until location mappiung is implemented
     for k,s in zip(keys,sensors):
+#        if s=='RightUpperArm':
+#            match = 'LeftUpperArm'
+#        elif s=='RightWrist':
+#            match = 'LeftWrist'
+#        elif s=='RightUpperLeg':
+#            match = 'LeftUpperLeg'
+#        elif s=='RightLowerLeg':
+#            match = 'LeftLowerLeg'
+#        else:
+#            continue
         if s=='S1':
             match = 'S5'
         elif s=='S2':
