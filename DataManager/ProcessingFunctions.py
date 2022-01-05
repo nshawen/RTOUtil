@@ -43,28 +43,33 @@ def vectorsToRotation(vec1, vec2):
     return Rotation.from_matrix(rotation_matrix)
 
 # calculate euler angles from accel data, when magnitude close to 1g (within tolerance bounds)
-def getInclinations(accelTri, accelMag = None, tol=None, gAxis = 0, eAxis = 'XYZ'):
+def getInclinations(accel_tri, accel_mag = None, tol=None, rel_vec = 0, e_axis = 'XYZ'):
     '''
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_euler.html
     '''
 
-    ax = matchAxis(accelTri.shape)
+    ax = matchAxis(accel_tri.shape)
 
-    refVector = np.zeros((3,1))
-    refVector[gAxis] = 1
+    if type(rel_vec) == int:
+        refVector = np.zeros((3,1))
+        refVector[rel_vec] = 1
+    elif len(rel_vec) == 3:
+        refVector = rel_vec
+    else:
+        raise Exception('Incorrect reference vector format. Should be an integer or len 3 iterable')
 
     # function for apply method
-    f = lambda x: pd.Series(vectorsToRotation(refVector,x.values).as_euler(eAxis,True),
-                            index=[c for c in eAxis])
+    f = lambda x: pd.Series(vectorsToRotation(refVector,x.values).as_euler(e_axis,True),
+                            index=[c for c in e_axis])
 
-    I = accelTri.apply(f,axis=ax)
+    I = accel_tri.apply(f,axis=ax)
 
     if tol is not None:
 
-        if accelMag is None:
-            accelMag = getMagnitude(accelTri)
+        if accel_mag is None:
+            accel_mag = getMagnitude(accel_tri)
 
-        dropInds = (accelMag>(1+tol)*g) | (accelMag<(1-tol)*g)
+        dropInds = (accel_mag>(1+tol)*g) | (accel_mag<(1-tol)*g)
         I.loc[dropInds,:] = np.nan
 
     return I
