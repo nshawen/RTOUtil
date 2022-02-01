@@ -2,6 +2,7 @@ from tkinter import *
 
 def save_continue(master, listbox, var):
     sel = listbox.curselection()
+    var.clear()
     for e in list(sel):
         var.append(listbox.get(e))
         
